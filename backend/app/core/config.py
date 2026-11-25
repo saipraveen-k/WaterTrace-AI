@@ -1,4 +1,5 @@
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import field_validator
 from typing import List
 
 
@@ -17,16 +18,29 @@ class Settings(BaseSettings):
     cluster_time_window_minutes: int = 120
     cluster_min_reports: int = 2
 
-    # CORS
+    # CORS — accepts comma-separated string or JSON array
     allowed_origins: List[str] = ["http://localhost:3000"]
 
     # App
     environment: str = "development"
     backend_url: str = "http://localhost:8000"
 
-    class Config:
-        env_file = ".env"
-        case_sensitive = False
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        case_sensitive=False,
+        env_ignore_empty=True,
+    )
+
+    @field_validator("allowed_origins", mode="before")
+    @classmethod
+    def parse_allowed_origins(cls, v):
+        if isinstance(v, str):
+            # Handle both "http://a,http://b" and '["http://a"]'
+            if v.startswith("["):
+                import json
+                return json.loads(v)
+            return [origin.strip() for origin in v.split(",") if origin.strip()]
+        return v
 
 
 settings = Settings()

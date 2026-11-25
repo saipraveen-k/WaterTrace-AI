@@ -29,7 +29,7 @@ from sklearn.cluster import DBSCAN
 import pandas as pd
 
 from app.core.config import settings
-from app.core.supabase import get_supabase_admin
+# get_supabase_admin imported lazily inside functions to allow offline unit testing
 
 
 # ---------------------------------------------------------------------------
@@ -95,6 +95,7 @@ def _extract_coordinates(location_wkb: str) -> tuple[float, float] | None:
 
 def _load_recent_reports(hours_back: int = 48) -> list[dict]:
     """Load unlinked reports from Supabase within the recent time window."""
+    from app.core.supabase import get_supabase_admin
     supabase = get_supabase_admin()
     since = (datetime.now(timezone.utc) - timedelta(hours=hours_back)).isoformat()
 
@@ -296,6 +297,7 @@ def run_clustering_pipeline() -> dict:
     Full clustering pipeline. Called by the API /incidents/analyze endpoint.
     Returns a summary of incidents created or updated.
     """
+    from app.core.supabase import get_supabase_admin
     supabase = get_supabase_admin()
     reports = _load_recent_reports(hours_back=72)
 

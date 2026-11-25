@@ -8,7 +8,7 @@ Falls back gracefully to deterministic logic if the API is unavailable.
 
 import re
 from typing import Optional
-import anthropic
+# anthropic imported lazily inside _llm_classify to avoid import error when not installed
 from app.core.config import settings
 
 
@@ -121,6 +121,7 @@ async def classify_report(description: str, use_llm: bool = True) -> dict:
 
 async def _llm_classify(description: str) -> dict:
     """LLM-based classification via Anthropic API."""
+    import anthropic  # Lazy import — only required when LLM is used
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
 
     system_prompt = """You are a water infrastructure classification assistant.
