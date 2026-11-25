@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app:*)",
+      "Bash(npx --yes create-next-app@latest:*)",
+      "Read(//c/tempp/projects/**)",
+      "Bash(cmd /c:*)",
+      "Bash(powershell -Command:*)"
+    ]
+  }
+}
